@@ -1,4 +1,4 @@
-#ifndef POINTMASS_H
+﻿#ifndef POINTMASS_H
 #define POINTMASS_H
 
 #include "CGL/CGL.h"
@@ -15,7 +15,10 @@ struct PointMass {
       : pinned(pinned), start_position(position), position(position),
         last_position(position) {}
 
-  Vector3D normal(WaveSurface ws);
+  //Vector3D normal(WaveSurface ws， double time);
+
+  Vector3D normal();
+  Vector3D normal(WaveSurface ws, Wave w, double t);
   Vector3D velocity(double delta_t) {
     return (position - last_position) / delta_t;
   }
