@@ -4,7 +4,7 @@
 #include "CGL/CGL.h"
 #include "CGL/misc.h"
 #include "CGL/vector3D.h"
-
+#include "waveSurface.h"
 using namespace CGL;
 
 // Forward declarations
@@ -15,7 +15,7 @@ struct PointMass {
       : pinned(pinned), start_position(position), position(position),
         last_position(position) {}
 
-  Vector3D normal();
+  Vector3D normal(WaveSurface ws);
   Vector3D velocity(double delta_t) {
     return (position - last_position) / delta_t;
   }

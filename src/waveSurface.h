@@ -22,13 +22,16 @@ struct WaveSurface {
   double gerstner_x_sum(double x, double y, double time);
   double gerstner_y_sum(double x, double y, double time);
   double gerstner_z_sum(double x, double y, double time);
-  double binormal_x_component(double S);
-  double binormal_y_component(double S);
-  double binormal_z_component(double C);
-  double tangent_x_component(double S);
-  double tangent_y_component(double S);
-  double tangent_z_component(double C);
-  double normal_z_component(double S);
+  Vector3D binormal(double x, double y, double time);
+  Vector3D tangent(double x, double y, double time);
+  Vector3D normal(double x, double y, double time);
+  double binormal_x_component(double time, Vector2D P);
+  double binormal_y_component(double time, Vector2D P);
+  double binormal_z_component(double time, Vector2D P);
+  double tangent_x_component(double time, Vector2D P);
+  double tangent_y_component(double time, Vector2D P);
+  double tangent_z_component(double time, Vector2D P);
+  double normal_z_component(double time, Vector2D P);
   Vector3D gerstner_position(double x, double y, double time);
 
 

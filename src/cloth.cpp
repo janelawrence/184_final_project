@@ -39,7 +39,7 @@ void Cloth::buildGrid() {
     double dw = (double)this->width/(this->num_width_points - 1);
     double dh = (double)this->height/(this->num_height_points - 1);
 
-    int num_waves = 4;
+    int num_waves = 30;
     
     //double numWaves, double steepness
     this->wavesurface = WaveSurface(num_waves, 0.03);
