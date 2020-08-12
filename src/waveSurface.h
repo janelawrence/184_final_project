@@ -14,7 +14,7 @@ using namespace std;
 
 struct WaveSurface {
   WaveSurface() {}
-  WaveSurface(double numWaves, double steepness);
+    WaveSurface(int numWaves, double steepness, vector<double> wavelength, vector<double> amplitude, vector<double> speed, vector<Vector2D> direction);
     
   double Height(double x, double y, double time);
   double del_height_del_x(double x, double y, double time);
@@ -38,7 +38,7 @@ struct WaveSurface {
 
   // properties
   double Q; //steepness
-  double numWaves;
+  int numWaves;
   vector<Wave> waves;
   //double accu_time;
   //double delta_t;

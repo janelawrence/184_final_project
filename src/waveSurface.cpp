@@ -10,33 +10,12 @@ using namespace std;
 const double phi = 1.;
 const double POWER_CONSTANT = 2.;
 
-WaveSurface::WaveSurface(double numWaves, double steepness) {
+WaveSurface::WaveSurface(int numWaves, double steepness, vector<double> wavelength, vector<double> amplitude, vector<double> speed, vector<Vector2D> direction  ) {
     this->numWaves = numWaves;
     this->Q = steepness;
-    Vector2D dir1 = Vector2D(2, 1);
-    Vector2D dir2 = Vector2D(2.5, 0.5);
-    Wave wave1 = Wave(0.5, 0.002, 0.3, dir1);
-    Wave wave2 = Wave(0.5, 0.002, 0.3, dir2);
-    Wave wave3 = Wave(0.2, 0.001, 0.3, dir2);
-    Wave wave4 = Wave(0.05, 0.008, 0.3, dir2);
-
     for (int i = 0; i < numWaves; ++i) {
-        if (i % 4 == 0) {
-            //double w = 0.1*rand();
-            //double a = 0.01 * rand();
-            this->waves.emplace_back(wave1);
-        }
-        else if (i%4 == 1 || i%4 == 2) {
-            this->waves.emplace_back(wave4);
-        }
-        else {
-            //double w = 0.01 * rand();
-            //double a = 0.001 * rand();
-            //Wave wave3 = Wave(w, a, 0.3, dir2);
-            this->waves.emplace_back(wave2);
-        }
-
-        //this->waves.emplace_back(wave1);
+        Wave w = Wave(wavelength[i], amplitude[i], speed[i], direction[i]);
+        this->waves.emplace_back(w);
     }
 }
 
@@ -76,7 +55,7 @@ Vector3D WaveSurface::tangent(double x, double y, double time) {
 
 Vector3D WaveSurface::normal(double x, double y, double time) {
     Vector2D P = Vector2D(x, y);  
-    return Vector3D(-this->normal_z_component(time, P),
+    return Vector3D(-this->binormal_z_component(time, P),  //Tell Lexy
         -this->tangent_z_component(time, P),
         this->normal_z_component(time, P));
 }
