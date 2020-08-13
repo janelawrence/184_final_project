@@ -16,7 +16,7 @@ struct PointMass {
         last_position(position) {}
 
   Vector3D normal();
-  Vector3D normal(WaveSurface w, double t);
+  Vector3D normal(WaveSurface w, double time);
   Vector3D velocity(double delta_t) {
     return (position - last_position) / delta_t;
   }

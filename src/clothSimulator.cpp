@@ -283,7 +283,7 @@ void ClothSimulator::drawContents() {
     Vector3D cam_pos = camera.position();
     shader.setUniform("u_color", color, false);
     shader.setUniform("u_cam_pos", Vector3f(cam_pos.x, cam_pos.y, cam_pos.z), false);
-    shader.setUniform("u_light_pos", Vector3f(0.5, 0.5, -2), false);
+          shader.setUniform("u_light_pos", Vector3f(0.5, 0.5, -2), false);
     shader.setUniform("u_light_intensity", Vector3f(3, 3, 3), false);
     shader.setUniform("u_texture_1_size", Vector2f(m_gl_texture_1_size.x, m_gl_texture_1_size.y), false);
     shader.setUniform("u_texture_2_size", Vector2f(m_gl_texture_2_size.x, m_gl_texture_2_size.y), false);
@@ -673,6 +673,19 @@ void ClothSimulator::initGUI(Screen *screen) {
 
     fb->setSpinnable(true);
     fb->setCallback([this](int value) { cp->numWaves = (int)(value); });
+      
+      
+    new Label(panel, "Steepness :", "sans-bold");
+
+    FloatBox<double> *fbs = new FloatBox<double>(panel);
+    fbs->setEditable(true);
+    fbs->setFixedSize(Vector2i(100, 20));
+    fbs->setFontSize(14);
+    fbs->setValue(cp->steepness);
+
+    fbs->setSpinnable(true);
+    fbs->setCallback([this](double value) { cp->steepness = (double)(value); });
+      
   }
 
   // Simulation constants
