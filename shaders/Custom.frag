@@ -22,6 +22,8 @@ uniform sampler2D u_texture_4;
 // Environment map! Take a look at GLSL documentation to see how to
 // sample from this.
 uniform samplerCube u_texture_cubemap;
+uniform vec2 u_texture_3_size;
+
 
 in vec4 v_position;
 in vec4 v_normal;
@@ -30,8 +32,112 @@ in vec2 v_uv;
 
 out vec4 out_color;
 
+float h(vec2 uv) {
+  // You may want to use this helper function...
+  return texture(u_texture_2, uv)[0];
+}
+
+float h2(vec2 uv) {
+  // You may want to use this helper function...
+  return texture(u_texture_3, uv)[0];
+}
+
+
 void main() {
   // Your awesome shader here!
-  out_color = (vec4(1, 1, 1, 0) + v_normal) / 2;
-  out_color.a = 1;
+  vec3 wo = u_cam_pos - vec3(v_position);
+  vec3 wi_reflect = 2 * vec3(v_normal) - wo;
+
+  //Bumping
+   vec3 b = cross(vec3(v_normal), vec3(v_tangent));
+  mat3 tbn = mat3(vec3(v_tangent), b, vec3(v_normal));
+
+
+  float u = v_uv[0];
+  float v = v_uv[1];
+  float width = u_texture_3_size[0];
+  float height = u_texture_3_size[1];
+
+  float du = (h2(vec2(u + 1/width, v)) - h2(v_uv)) * u_height_scaling * u_normal_scaling;
+  float dv = (h2(vec2(u, v + 1/height)) - h2(v_uv)) * u_height_scaling * u_normal_scaling;
+  vec3 n0 = vec3(-du, -dv, 1);
+
+  vec3 nd = tbn * n0;
+
+
+  vec4 l_vec = vec4(u_light_pos, 1.0) - v_position;
+  float cos_theta1 = dot(normalize(l_vec), normalize(vec4(nd, 0.0)));
+
+  vec4 to_cam = vec4(u_cam_pos, 1.0) - v_position;
+  vec4 h = (to_cam + l_vec) / 2;
+  float cos_theta2 = dot(normalize(vec4(nd, 0.0)), normalize(h));
+  float r = length(l_vec);
+
+
+  float k_d = 1;
+  float k_a = 0.15;
+  vec3 i_a = vec3(0.15, 0.15, 0.15);
+  float k_s = 0.5;
+  float p = 20;
+
+  vec3 l_d = k_d * u_light_intensity/(r*r) * max(0, cos_theta1);
+  vec3 l_a = k_a * i_a;
+  vec3 l_s = k_s * u_light_intensity/(r*r) * pow(max(0, cos_theta2), p);
+
+  vec4 out_color3;
+  out_color3 = vec4(l_a+l_d+l_s, out_color.a);
+
+    //phong shading 
+    //vec4 l_vec = vec4(u_light_pos, 1.0) - v_position;
+    //float cos_theta1 = dot(normalize(l_vec), normalize(v_normal));
+
+    //vec4 to_cam = vec4(u_cam_pos, 1.0) - v_position;
+    //h = (to_cam + l_vec) / 2;
+    //float cos_theta2 = dot(normalize(v_normal), normalize(h));
+    //float r = length(l_vec);
+
+
+    //float k_d = 0.5;
+    //float k_a = 0.9;
+    //vec3 i_a = vec3(0, 0, 0.80);
+    //float k_s = 1;
+    //float p = 20;
+
+    //vec3 l_d = k_d * u_light_intensity/(r*r) * max(0, cos_theta1);
+   // vec3 l_a = k_a * i_a;
+    //vec3 l_s = k_s * u_light_intensity/(r*r) * pow(max(0, cos_theta2), p);
+
+    k_d = 0.5;
+    k_a = 0.9;
+    i_a = vec3(0, 0, 0.80);
+    k_s = 1;
+    p = 20;
+
+    l_d = k_d * u_light_intensity/(r*r) * max(0, cos_theta1);
+    l_a = k_a * i_a;
+    l_s = k_s * u_light_intensity/(r*r) * pow(max(0, cos_theta2), p);
+      
+    vec4 out_p = vec4(l_s + l_a + l_d, 1);
+
+  //refraction
+    vec3 wi_refract;
+    float eta = 1.0/1.33;
+    float temp = 1 - eta * eta * (1 - wo.z * wo.z);
+    
+    //reflection + texture + phong
+    if (temp < 0) { //cos_theta = wo.z
+        out_color = out_p + 0.5 * texture(u_texture_cubemap, wi_reflect) + 0.5* texture(u_texture_1, vec2(wi_reflect));
+        out_color.a = 0.5;
+        return;
+    }
+    wi_refract.z = wo.z < 0? sqrt(temp): -sqrt(temp); //cos_theta_prime = wi.z
+    wi_refract.x = - eta * wo.x;
+    wi_refract.y = - eta * wo.y;
+    
+
+    //out_color = out_color3 + out_p + 0.2* texture(u_texture_4, vec2(wi_refract)) + 0.5* texture(u_texture_1, v_uv);
+    out_color = out_color3 + 0.2* texture(u_texture_4, vec2(wi_refract)) + 0.5* texture(u_texture_1, v_uv);
+    out_color.a = 1;
+
+
 }
